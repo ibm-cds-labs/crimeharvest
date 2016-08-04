@@ -14,9 +14,9 @@
     "Socrata",
     "Node.js",
     "Cloudant",
-    "geospatial", 
-	"opendata", 
-	"crime"
+    "geospatial",
+    "opendata",
+    "crime"
   ],
   "author": "Raj Singh (https://cloudant.com/)",
   "license": "Apache-2.0",
@@ -26,9 +26,10 @@
   "homepage": "https://github.com/rajrsingh/crimeharvest/",
   "dependencies": {
     "cloudant": "^1.0.0-beta3",
-    "request": "~2.73.0", 
-    "cron": "~1.1.0", 
-    "node-socrata": "^0.0.50", 
+    "cron": "~1.1.0",
+    "csvtojson": "^1.0.0",
+    "node-socrata": "^0.0.50",
+    "request": "~2.73.0",
     "twilio": "~2.9.1"
   }
 }

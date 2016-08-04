@@ -10,6 +10,8 @@ var dbname = process.env.CLOUDANTDB || process.argv[2]; //'crimes';
 //-- end Cloudant
 
 var sites = require('./lib/sites.js');
+var Converter = require('csvtojson').Converter;
+var request = require('request');
 
 //-- Repeating job to send messages
 var thejob = new CronJob('00 00 22 * * *', harvestCrimes); // every day at about 3am GMT
@@ -30,7 +32,7 @@ function harvestCrimes() {
 				var thedb = cloudant.db.use(dbname); 
 
 				sites.forEach(function(site, index) {
-					harvestSite(site, thedb);
+					fetchCrimeMappings(site, thedb);
 				});
 			}
 		}); //end Cloudant connect
@@ -40,42 +42,54 @@ function harvestCrimes() {
 	}
 }
 
-function harvestSite(site, thedb) {
-	console.log('Harvesting %s crimes...', site.city);
+function fetchCrimeMappings(site, thedb) {
+	console.log('Fetching %s crime mappings...', site.city);
 
-	// Configure the where clause
-	var where = site.where();
+  var converter = new Converter({});
+  converter.on('end_parsed', function (mappings) {
+		harvestCrimeData(site, thedb, mappings)
+  }); //end csvtojson converter
 
-	var params = { 
-		$select: site.select, 
-		$where: where, 
-		$limit: SOCRATA_MAX_RECORDS
-	};
+  request.get(site.mappingFile).pipe(converter);
+}
 
-	var soda = new Socrata({
-		hostDomain: site.host,
-		resource: site.resource
-	});
+function harvestCrimeData(site, thedb, mappings) {
+		console.log('Fetching %s crime data...', site.city);
 
-	soda.get(params, function(connecterr, response, data) {
-		if (connecterr) {
-			logMessage(site.city, connecterr);
-			console.log(connecterr);
-		}
-		else {
-			// Even if we get data back, let's run through some sanity checks
-			var mincrimes = 15;
-			if ( data.length < mincrimes) logMessage(site.city, 'POSSIBLE ERROR: less than ' + mincrimes + ' found for day ' + where);
+		// Configure the where clause
+		var where = site.where();
 
-			var newcrimes = site.process(site, data);
+		var params = { 
+			$select: site.select, 
+			$where: where, 
+			$limit: SOCRATA_MAX_RECORDS
+		};
 
-			thedb.bulk({ 'docs': newcrimes }, null, function(error, body) {
-				if (error) logMessage(site.city, 'Error writing new crimes: ' + error);
-			});
+		var soda = new Socrata({
+			hostDomain: site.host,
+			resource: site.resource
+		});
 
-			logMessage(site.city, 'SUCCESSFULLY inserted ' + newcrimes.length + ' new crimes: ' + where);
-		}
-	}); //end soda get
+		soda.get(params, function(connecterr, response, data) {
+			if (connecterr) {
+				logMessage(site.city, connecterr);
+				console.log(connecterr);
+			}
+			else {
+				// Even if we get data back, let's run through some sanity checks
+				var mincrimes = 15;
+				if ( data.length < mincrimes) logMessage(site.city, 'POSSIBLE ERROR: less than ' + mincrimes + ' found for day ' + where);
+
+				var newcrimes = site.process(site, data, mappings);
+
+				thedb.bulk({ 'docs': newcrimes }, null, function(error, body) {
+					if (error) logMessage(site.city, 'Error writing new crimes: ' + error);
+				});
+
+				logMessage(site.city, 'SUCCESSFULLY inserted ' + newcrimes.length + ' new crimes: ' + where);
+			}
+		}); //end soda get
+
 }
 
 function logMessage(cityname, messageinfo) {
@@ -104,7 +118,7 @@ if ( process.env.VCAP_SERVICES && process.env.VCAP_SERVICES['user-provided'] ) {
   accountSid = process.env.VCAP_SERVICES['user-provided'][0].credentials.accountSID;
   authToken = process.env.VCAP_SERVICES['user-provided'][0].credentials.authToken;
   TWILIO_CRIMEHARVEST_MESSAGINGSERVICESID = process.env.VCAP_SERVICES['user-provided'][0].credentials.messagingServiceSid;
-//   console.log("here with accountSid=%s", accountSid);
+//   console.log('here with accountSid=%s', accountSid);
 }
 var twilio = require('twilio')(accountSid, authToken);
 //-- end Twilio
@@ -116,7 +130,7 @@ var twilio = require('twilio')(accountSid, authToken);
 function sendSMS(msg) {
 	twilio.sendMessage({
 		messagingServiceSid: 'MG9752274e9e519418a7406176694466fa',
-	    to: "+16176429372",
+	    to: '+16176429372',
 	    body: msg
 	}, function(err, message) {
 		if (err) 
