@@ -16,7 +16,6 @@ var request = require('request');
 //-- Repeating job to send messages
 var thejob = new CronJob('00 00 22 * * *', harvestCrimes); // every day at about 3am GMT
 thejob.start();
-harvestCrimes();
 
 function harvestCrimes() {
 	if (sites && sites.length > 0) {
@@ -100,7 +99,7 @@ function logMessage(cityname, messageinfo) {
 	};
 	console.log(JSON.stringify(msg));
 	// send Raj an SMS
-	// sendSMS(JSON.stringify(msg));
+	sendSMS(JSON.stringify(msg));
 
 	Cloudant({account:dbuser, password:password}, function(er, cloudant) {
 		var logdb = cloudant.db.use(dbname+'_log');
