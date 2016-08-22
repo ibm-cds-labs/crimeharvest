@@ -1,8 +1,11 @@
+Dallas: https://www.dallasopendata.com/Police/Dallas-Police-Public-Data-RMS-Incidents/tbnj-w5hb
+Boston: https://data.cityofboston.gov/Public-Safety/Crime-Incident-Reports-August-2015-July-2016-/ry9x-evjv
 Philly: https://www.opendataphilly.org/dataset/crime-incidents
 Chicago: https://data.cityofchicago.org/Public-Safety/Crimes-2001-to-present/ijzp-q8t2
 Austin: https://data.austintexas.gov/Public-Safety/APD-Incident-Extract-YTD/b4y9-5x39 (NOT MUCH LOCATION DATA)
 SF: https://data.sfgov.org/Public-Safety/SFPD-Incidents-from-1-January-2003/tmnf-yvry 
 https://data.sfgov.org/resource/cuks-n6tp.json
+
 
 Baton Rouge: https://data.brla.gov/Public-Safety/Baton-Rouge-Crime-Incidents/fabb-cnnu
 Providence: https://data.providenceri.gov/Public-Safety/Providence-Police-Department-Arrest-Log-Past-30-Da/vank-fyx9
