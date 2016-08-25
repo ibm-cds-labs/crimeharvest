@@ -1,4 +1,4 @@
-var x = function (doc) {
+var x = function (doc) { 
   doc['type'] = 'Feature';
   doc['properties'] = {};
   doc['geometry'] = {};
@@ -38,7 +38,7 @@ var x = function (doc) {
     console.error("Bad location");
   }
 
-  delete doc['Reported by'];
+  // delete doc['Reported by'];
   delete doc['Longitude'];
   delete doc['Latitude'];
   delete doc['LSOA code'];
