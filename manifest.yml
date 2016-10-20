@@ -9,7 +9,3 @@ applications:
   no-route: true
   domain: mybluemix.net
   instances: 1
-  env:
-    CLOUDANTDB: crimes
-    CLOUDANTPASSWORD: NVFH8ReUf9cnz
-    CLOUDANTUSER: opendata
