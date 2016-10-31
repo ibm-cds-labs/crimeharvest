@@ -1,5 +1,4 @@
-.bluemix
-.vscode 
+.*
 uk/data
 
 # Logs
