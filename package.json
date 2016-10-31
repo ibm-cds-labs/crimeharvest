@@ -1,6 +1,6 @@
 {
   "name": "crimeharvest",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "moves crime data from Socrata to Cloudant",
   "main": "app.js",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/rajrsingh/crimeharvest.git"
+    "url": "https://github.com/ibm-cds-labs/crimeharvest.git"
   },
   "keywords": [
     "Socrata",
@@ -18,12 +18,12 @@
     "opendata",
     "crime"
   ],
-  "author": "Raj Singh (https://cloudant.com/)",
+  "author": "Raj Singh (https://developer.ibm.com/clouddataservices/author/rrsingh/)",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/rajrsingh/crimeharvest/issues"
+    "url": "https://github.com/ibm-cds-labs/crimeharvest/issues"
   },
-  "homepage": "https://github.com/rajrsingh/crimeharvest/",
+  "homepage": "https://github.com/ibm-cds-labs/crimeharvest/",
   "dependencies": {
     "cloudant": "^1.0.0-beta3",
     "cron": "~1.1.0",
