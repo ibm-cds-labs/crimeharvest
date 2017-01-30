@@ -32,3 +32,5 @@ the `properties.timestamp` value is a JavaScript timestamp recorded in the time 
 ### UK data
 
 In the `uk` folder is a bash shell script to import data that has been downloaded in CSV format from [https://data.police.uk/data/](https://data.police.uk/data/)
+
+_This application is for demonstration purposes only and is in no way offering advice for safety purposes_
