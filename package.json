@@ -6,6 +6,9 @@
   "scripts": {
     "start": "node ./app.js"
   },
+  "engines": {
+    "node": "6.x"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/ibm-cds-labs/crimeharvest.git"
@@ -28,9 +31,11 @@
     "cloudant": "^1.0.0-beta3",
     "cron": "~1.1.0",
     "csvtojson": "^1.0.0",
+    "dotenv": "^4.0.0",
+    "express": "^4.15.2",
     "node-socrata": "^0.0.50",
-    "request": "~2.73.0",
-    "proj4": "^2.3.15", 
-    "twilio": "~2.9.1"
+    "nodemailer": "^3.1.8",
+    "proj4": "^2.3.15",
+    "request": "~2.73.0"
   }
 }

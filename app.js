@@ -1,13 +1,35 @@
 var Cloudant = require('cloudant');
 var CronJob = require('cron').CronJob;
 var Socrata = require('node-socrata');
-var SOCRATA_MAX_RECORDS = 50000;
+var nodemailer = require("nodemailer");
+var dotenv = require('dotenv');
+dotenv.config(); // load environment variables
+
+const SOCRATA_MAX_RECORDS = 50000;
 
 //-- Cloudant settings
 var password = process.env.CLOUDANTPASSWORD || process.argv[4];
 var dbuser = process.env.CLOUDANTUSER || process.argv[3]; //'rajsingh'; // Set this to your own account
 var dbname = process.env.CLOUDANTDB || process.argv[2]; //'crimes';
 //-- end Cloudant
+
+//-- mail settings
+var mailhost = process.env.MAILHOST;
+var mailuser = process.env.MAILUSER;
+var mailpw = process.env.MAILPW;
+var smtpTransport = nodemailer.createTransport({
+   service: "a2",
+   host: mailhost,
+   port: 465, 
+   secure: true,  
+   auth: {
+       user: mailuser,
+       pass: mailpw
+   }, 
+   tls: {
+        rejectUnauthorized: false // do not fail on invalid certs
+    }
+});
 
 var sites = require('./lib/sites.js');
 var Converter = require('csvtojson').Converter;
@@ -82,7 +104,14 @@ function harvestCrimeData(site, thedb, mappings) {
 				var newcrimes = site.process(site, data, mappings);
 
 				thedb.bulk({ 'docs': newcrimes }, null, function(error, body) {
-					if (error) logMessage(site.city, 'Error writing new crimes: ' + error);
+					if (error) {
+						logMessage(site.city, 'Error writing new crimes: ' + error);
+						msg = {
+							subject:'crimeharvest error', 
+							text: "City: " + site.city + "\n\n" + error
+						};
+						mailRaj(msg);
+					}
 				});
 
 				logMessage(site.city, 'SUCCESSFULLY inserted ' + newcrimes.length + ' new crimes: ' + where);
@@ -94,12 +123,12 @@ function harvestCrimeData(site, thedb, mappings) {
 function logMessage(cityname, messageinfo) {
 	var msg = {
 		time: new Date().getTime(),
-		msg: cityname + ': ' + messageinfo,
-		app: 'crimeharvest'
+		text: cityname + ': ' + messageinfo,
+		subject: 'app: crimeharvest log message'
 	};
 	console.log(JSON.stringify(msg));
-	// send Raj an SMS
-	sendSMS(JSON.stringify(msg));
+	// send Raj an email
+	mailRaj(msg);
 
 	Cloudant({account:dbuser, password:password}, function(er, cloudant) {
 		var logdb = cloudant.db.use(dbname+'_log');
@@ -109,31 +138,30 @@ function logMessage(cityname, messageinfo) {
 	});
 }
 
-//-- Twilio SMS sending service settings
-var accountSid = 'ACa784a1107f8b9c468baa5541b92a1b3a';
-var authToken = '5ddd13ecb64fff0f5f0537ab2cc33c3f';
-var TWILIO_CRIMEHARVEST_MESSAGINGSERVICESID = 'MG2e81953d80cb5ebde84c25af6967dfa3'
-if ( process.env.VCAP_SERVICES && process.env.VCAP_SERVICES['user-provided'] ) {
-  accountSid = process.env.VCAP_SERVICES['user-provided'][0].credentials.accountSID;
-  authToken = process.env.VCAP_SERVICES['user-provided'][0].credentials.authToken;
-  TWILIO_CRIMEHARVEST_MESSAGINGSERVICESID = process.env.VCAP_SERVICES['user-provided'][0].credentials.messagingServiceSid;
-//   console.log('here with accountSid=%s', accountSid);
-}
-var twilio = require('twilio')(accountSid, authToken);
-//-- end Twilio
+function mailRaj(msgobj) {
+	var mail = {
+		from: mailuser,
+		to: "rrsingh@us.ibm.com",
+		subject: msgobj.subject,
+		text: msgobj.text ? msgobj.text : "",
+		html: msgobj.html ? msgobj.html : ""
+	};
 
-/**
- * Sends a text message to Raj.
- * With a user management system, and a non-trial Twilio account, this could be expanded to text others
- */
-function sendSMS(msg) {
-	twilio.sendMessage({
-		messagingServiceSid: 'MG9752274e9e519418a7406176694466fa',
-	    to: '+16176429372',
-	    body: msg
-	}, function(err, message) {
-		if (err) 
-			console.log(err);
+	smtpTransport.sendMail(mail, (error, info) => {
+		if (error) {
+			return console.log(error);
+		}
+		console.log('Message %s sent: %s', info.messageId, info.response);
 	});
 }
 
+// it seems that cf apps don't like it if they ever exit, so listen like a web server for no reason
+var express = require('express');
+var app = express();
+app.set('title', 'crimeharvest');
+// The IP address of the Cloud Foundry DEA (Droplet Execution Agent) that hosts this application:
+var host = ('0.0.0.0' || 'localhost');
+// The port on the DEA for communication with the application:
+var port = (process.env.PORT || 8080);
+// Start server
+app.listen(port, host);
