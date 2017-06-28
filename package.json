@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ibm-cds-labs/crimeharvest.git"
+    "url": "https://github.com/ibm-watson-data-lab/crimeharvest.git"
   },
   "keywords": [
     "Socrata",
@@ -24,9 +24,9 @@
   "author": "Raj Singh (https://developer.ibm.com/clouddataservices/author/rrsingh/)",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/ibm-cds-labs/crimeharvest/issues"
+    "url": "https://github.com/ibm-watson-data-lab/crimeharvest/issues"
   },
-  "homepage": "https://github.com/ibm-cds-labs/crimeharvest/",
+  "homepage": "https://github.com/ibm-watson-data-lab/crimeharvest/",
   "dependencies": {
     "cloudant": "^1.0.0-beta3",
     "cron": "~1.1.0",
