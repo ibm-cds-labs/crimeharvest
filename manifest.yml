@@ -9,3 +9,10 @@ applications:
   no-route: true
   domain: mybluemix.net
   instances: 1
+  env:
+    CLOUDANTDB: crimes
+    CLOUDANTPASSWORD: putrealpasswordhere
+    CLOUDANTUSER: putrealuserhere
+    MAILHOST: putrealmail.hosthere.com
+    MAILUSER: putrealmailuserhere
+    MAILPW: putrealpasswordhere
