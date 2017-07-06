@@ -36,7 +36,7 @@ var Converter = require('csvtojson').Converter;
 var request = require('request');
 
 //-- Repeating job to send messages
-var thejob = new CronJob('00 00 22 * * *', harvestCrimes); // every day at about 3am GMT
+var thejob = new CronJob('00 00 03 * * *', harvestCrimes); // every day at 3am GMT
 thejob.start();
 
 function harvestCrimes() {
@@ -123,7 +123,7 @@ function harvestCrimeData(site, thedb, mappings) {
 function logMessage(cityname, messageinfo) {
 	var msg = {
 		time: new Date().getTime(),
-		text: cityname + ': ' + messageinfo,
+		text: cityname + ': ' + messageinfo.toString(),
 		subject: 'app: crimeharvest log message'
 	};
 	console.log(JSON.stringify(msg));
